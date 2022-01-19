@@ -36,5 +36,7 @@ And we can delete the old `sparse` and `suffix` files.
 
 In order not to block, we can construct the new-sparse in parallel, whilst still writing to the old suffix. Then we copy all the data-after-commit from the old suffix to the new (again, can be done in parallel, but at some point we probably block and copy the last remaining bit), and switch over.
 
-Now, exposing file descriptors is potentially dangerous, because they are invalid when we switch over.
+Now, exposing file descriptors is potentially dangerous, because they are invalid when we switch over. So the suffix file should probably provide some interface that is file-like, but doesn't use fds. Something like "append_bytes" (which is what they currently ue I think).
+
+In addition, there is a need to record the **last flushed position** in order to recover from crashes on the append-only file.
 
